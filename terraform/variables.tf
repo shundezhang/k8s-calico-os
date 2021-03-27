@@ -25,7 +25,7 @@ variable "master_flavor" {
 
 variable "master_count" {
   type = number
-  default = 3
+  default = 1
 }
 
 variable "network_calico" {
@@ -40,7 +40,7 @@ variable "network_calico_cidr" {
 
 variable "worker_count" {
   type = number
-  default = 1
+  default = 2
 }
 
 variable "worker_flavor" {

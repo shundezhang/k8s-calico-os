@@ -106,6 +106,7 @@ resource "openstack_networking_port_v2" "jump_host_port" {
 }
 
 resource "openstack_compute_instance_v2" "jump_host" {
+  name            = "jump_host"
   image_name      = var.image
   flavor_name     = var.jump_host_flavor
   key_pair        = var.key_name
