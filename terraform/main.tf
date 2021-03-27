@@ -9,6 +9,10 @@ resource "openstack_networking_subnet_v2" "subnet_calico" {
   name       = "${var.network_calico}_subnet"
   network_id = openstack_networking_network_v2.network_calico.id
   cidr       = var.network_calico_cidr
+  allocation_pool {
+    start = var.network_calico_start_ip
+    end   = var.network_calico_end_ip
+  }
   ip_version = 4
 }
 

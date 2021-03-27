@@ -38,6 +38,16 @@ variable "network_calico_cidr" {
   default = "192.168.0.0/16"
 }
 
+variable "network_calico_start_ip" {
+  type        = string
+  default = "192.168.0.1"
+}
+
+variable "network_calico_end_ip" {
+  type        = string
+  default = "192.168.0.200"
+}
+
 variable "worker_count" {
   type = number
   default = 2
