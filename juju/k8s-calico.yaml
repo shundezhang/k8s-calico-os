@@ -1,0 +1,92 @@
+applications:
+  calico:
+    charm: cs:~containers/calico-759
+    options:
+      cidr: 10.254.132.64/26
+      global-as-number: 64552
+      global-bgp-peers: '[{address: 10.254.9.1, as-number: 64550}]'
+      ipip: Never
+      nat-outgoing: false
+      node-to-node-mesh: true
+  containerd:
+    charm: cs:~containers/containerd-102
+  easyrsa:
+    charm: cs:~containers/easyrsa-345
+    num_units: 1
+  etcd:
+    charm: cs:etcd-553
+    num_units: 1
+    options:
+      channel: 3.4/stable
+  kubernetes-master:
+    charm: cs:~containers/kubernetes-master-955
+    num_units: 1
+    options:
+      allow-privileged: "true"
+      api-extra-args: ""
+      audit-policy: |
+        apiVersion: audit.k8s.io/v1beta1
+        kind: Policy
+        rules:
+        # Don't log read-only requests from the apiserver
+        - level: None
+          users: ["system:apiserver"]
+          verbs: ["get", "list", "watch"]
+        # Don't log kube-proxy watches
+        - level: None
+          users: ["system:kube-proxy"]
+          verbs: ["watch"]
+          resources:
+          - resources: ["endpoints", "services"]
+        # Don't log nodes getting their own status
+        - level: None
+          userGroups: ["system:nodes"]
+          verbs: ["get"]
+          resources:
+          - resources: ["nodes"]
+        # Don't log kube-controller-manager and kube-scheduler getting endpoints
+        - level: None
+          users: ["system:unsecured"]
+          namespaces: ["kube-system"]
+          verbs: ["get"]
+          resources:
+          - resources: ["endpoints"]
+        # Log everything else at the Request level.
+        - level: Request
+          omitStages:
+          - RequestReceived
+      audit-webhook-config: ""
+      authorization-mode: RBAC,Node
+      dns-provider: kube-dns
+      #extra_sans: <k8s-api-domain> # FIXME
+      service-cidr: 10.254.132.128/26
+  kubernetes-worker:
+    charm: cs:~containers/kubernetes-worker-726
+    num_units: 1
+    expose: true
+    options:
+      kubelet-extra-config: '{}'
+relations:
+- - etcd:certificates
+  - easyrsa:client
+- - kubernetes-master:kube-control
+  - kubernetes-worker:kube-control
+- - kubernetes-master:etcd
+  - etcd:db
+- - containerd:containerd
+  - kubernetes-master:container-runtime
+- - containerd:containerd
+  - kubernetes-worker:container-runtime
+- - kubernetes-master:certificates
+  - easyrsa:client
+- - kubernetes-worker:certificates
+  - easyrsa:client
+- - calico:etcd
+  - etcd:db
+- - calico:cni
+  - kubernetes-master:cni
+- - calico:cni
+  - kubernetes-worker:cni
+- - kubernetes-master:kube-api-endpoint
+  - kubernetes-worker:kube-api-endpoint
+
