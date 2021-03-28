@@ -6,9 +6,9 @@ applications:
   calico:
     charm: cs:~containers/calico-759
     options:
-      cidr: 192.168.128.0/17
+      cidr: 192.168.128.0/18
       global-as-number: 64552
-      global-bgp-peers: '[{address: 10.254.9.1, as-number: 64550}]'
+      global-bgp-peers: '[{address: 192.168.0.193, as-number: 64512}]'
       ipip: Never
       nat-outgoing: false
       node-to-node-mesh: true
@@ -69,7 +69,7 @@ applications:
       authorization-mode: RBAC,Node
       dns-provider: kube-dns
       #extra_sans: <k8s-api-domain> # FIXME
-      service-cidr: 10.254.132.128/26
+      service-cidr: 192.168.192.0/18
   kubernetes-worker:
     charm: cs:~containers/kubernetes-worker-726
     num_units: 2
