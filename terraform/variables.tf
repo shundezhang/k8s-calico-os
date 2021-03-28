@@ -40,7 +40,7 @@ variable "network_calico_cidr" {
 
 variable "network_calico_start_ip" {
   type        = string
-  default = "192.168.0.1"
+  default = "192.168.0.10"
 }
 
 variable "network_calico_end_ip" {
