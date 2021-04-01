@@ -125,3 +125,17 @@ resource "openstack_compute_instance_v2" "jump_host" {
   }
 
 }
+
+locals {
+  k8s_hosts_map = tomap({"host_name"=openstack_compute_instance_v2.worker[*].name, "host_ip"=openstack_compute_instance_v2.worker[*].network[0].fixed_ip_v4})
+}
+resource "local_file" "ansible_inventory" {
+  content = templatefile("${path.module}/inventory.tpl",
+    {
+      jump_host = openstack_compute_instance_v2.jump_host.network[0].fixed_ip_v4
+      k8s_hosts = jsonencode(k8s_hosts_map)
+    }
+  )
+  filename = "../ansible/inventory"
+}
+
