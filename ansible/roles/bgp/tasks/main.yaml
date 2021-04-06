@@ -1,0 +1,17 @@
+---
+
+- name: install bird package
+  package:
+    name: bird
+    state: installed
+
+- name: bird config file
+  template:
+    src: bird.conf.j2
+    dest: /etc/bird/bird.conf
+
+- name: ensure bird service is running
+  service:
+    name: bird
+    state: started
+    enabled: true

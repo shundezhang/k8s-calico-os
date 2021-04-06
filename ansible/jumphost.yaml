@@ -1,0 +1,6 @@
+---
+
+- hosts: jump_host
+  become: true
+  roles:
+    - { role: bgp, tags: always }
