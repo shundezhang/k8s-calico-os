@@ -50,7 +50,7 @@ variable "network_calico_end_ip" {
 
 variable "worker_count" {
   type = number
-  default = 2
+  default = 3
 }
 
 variable "worker_flavor" {
