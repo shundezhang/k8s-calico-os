@@ -33,7 +33,7 @@ protocol direct {
    debug all;
 }
 
-{% for hostname, ip in k8s_hosts %}
+{% for hostname, ip in k8s_hosts.items() %}
 protocol bgp '{{ hostname }}' {
   description "Connection to master_0";
   local as 64512;

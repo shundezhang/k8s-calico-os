@@ -67,7 +67,6 @@ applications:
           - RequestReceived
       audit-webhook-config: ""
       authorization-mode: RBAC,Node
-      dns-provider: kube-dns
       #extra_sans: <k8s-api-domain> # FIXME
       service-cidr: 192.168.192.0/18
   kubernetes-worker:

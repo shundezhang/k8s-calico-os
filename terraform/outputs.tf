@@ -1,11 +1,11 @@
 output "master_ips" {
   description = "master ips"
-  value = formatlist(openstack_compute_instance_v2.master[*].network[0].fixed_ip_v4)
+  value = tolist(openstack_compute_instance_v2.master[*].network[0].fixed_ip_v4)
 }
 
 output "worker_ips" {
   description = "worker ips"
-  value = formatlist(openstack_compute_instance_v2.worker[*].network[0].fixed_ip_v4)
+  value = tolist(openstack_compute_instance_v2.worker[*].network[0].fixed_ip_v4)
 }
 
 output "juju_add_master_commands" {
