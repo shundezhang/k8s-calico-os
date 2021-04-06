@@ -14,3 +14,20 @@ ansible-playbook -i inventory jumphost.yaml
 juju deploy ./k8s-calico.yaml
 ```
 
+Useful commands
+(On master)
+```
+calicoctl node status
+calicoctl get ippool
+calicoctl get bgppeer
+```
+(On jump host)
+```
+birdc show route
+```
+
+Determine best networking option
+https://docs.projectcalico.org/networking/determine-best-networking
+
+Configure calicoctl to connect to the Kubernetes API datastore
+https://docs.projectcalico.org/getting-started/clis/calicoctl/configure/kdd
