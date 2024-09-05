@@ -1,5 +1,7 @@
 provider "openstack" {}
 
+provider "juju" {}
+
 resource "openstack_networking_network_v2" "network_calico" {
   name           = var.network_calico
   admin_state_up = "true"
@@ -144,3 +146,31 @@ resource "local_file" "ansible_inventory" {
   file_permission = "0644"
 }
 
+resource "juju_model" "k8s_calico" {
+  name = "k8s-calico"
+  cloud {
+    name = var.juju_cloud_name
+  }
+  config {
+    network = "${var.network_main},${var.network_calico}"
+  }
+}
+
+resource "juju_application" "calico" {
+  name  = "calico"
+  model = juju_model.k8s_calico.name
+
+  charm {
+    name    = "calico"
+    channel = "1.28/stable"
+  }
+
+  config = {
+    cidr = "192.168.128.0/18"
+    global-as-number = 64552
+    global-bgp-peers = "[{address: 192.168.0.193, as-number: 64512}]"
+    ipip = "Never"
+    nat-outgoing = false
+    node-to-node-mesh = true
+  }
+}

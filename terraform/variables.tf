@@ -62,3 +62,8 @@ variable "jump_host_flavor" {
   type        = string
   default = "staging-cpu1-ram2-disk20"
 }
+
+variable "juju_cloud_name" {
+  type        = string
+  default = "prodstack"
+}
