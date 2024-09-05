@@ -173,6 +173,10 @@ resource "juju_application" "calico" {
     nat-outgoing = false
     node-to-node-mesh = true
   }
+  units = 0
+  lifecycle {
+      ignore_changes = [ placement, ]
+  }
 }
 
 resource "juju_application" "containerd" {
@@ -182,6 +186,10 @@ resource "juju_application" "containerd" {
   charm {
     name    = "containerd"
     channel = "1.28/stable"
+  }
+  units = 0
+  lifecycle {
+      ignore_changes = [ placement, ]
   }
 
 }
@@ -195,7 +203,7 @@ resource "juju_application" "easyrsa" {
     channel = "1.28/stable"
   }
 
-  placement = "0"
+  placement = local.k8s_juju_ids[0]
 }
 
 resource "juju_application" "etcd" {
@@ -210,7 +218,7 @@ resource "juju_application" "etcd" {
   config = {
     channel = "3.4/stable"
   }
-  placement = "0"
+  placement = local.k8s_juju_ids[0]
 }
 
 resource "juju_application" "kubernetes_worker" {
@@ -226,6 +234,98 @@ resource "juju_application" "kubernetes_worker" {
     kubelet-extra-config = "{}"
   }
 
-  placement = "1,2"
-  expose = true
+  placement = join(",", slice(local.k8s_juju_ids, 1))
+
+  lifecycle {
+        ignore_changes = [ placement, ]
+  }
+}
+
+resource "juju_application" "kubernetes_control_plane" {
+  name  = "kubernetes_control_plane"
+  model = juju_model.k8s_calico.name
+
+  charm {
+    name    = "kubernetes-control-plane"
+    channel = "1.28/stable"
+  }
+
+  config = {
+    allow-privileged = "true"
+    api-extra-args = ""
+    audit-webhook-config = ""
+    authorization-mode = "RBAC,Node"
+    service-cidr = "192.168.192.0/18"
+    audit-policy = <<EOT
+        apiVersion: audit.k8s.io/v1beta1
+        kind: Policy
+        rules:
+        # Don't log read-only requests from the apiserver
+        - level: None
+          users: ["system:apiserver"]
+          verbs: ["get", "list", "watch"]
+        # Don't log kube-proxy watches
+        - level: None
+          users: ["system:kube-proxy"]
+          verbs: ["watch"]
+          resources:
+          - resources: ["endpoints", "services"]
+        # Don't log nodes getting their own status
+        - level: None
+          userGroups: ["system:nodes"]
+          verbs: ["get"]
+          resources:
+          - resources: ["nodes"]
+        # Don't log kube-controller-manager and kube-scheduler getting endpoints
+        - level: None
+          users: ["system:unsecured"]
+          namespaces: ["kube-system"]
+          verbs: ["get"]
+          resources:
+          - resources: ["endpoints"]
+        # Log everything else at the Request level.
+        - level: Request
+          omitStages:
+          - RequestReceived
+    EOT
+  }
+
+  placement = local.k8s_juju_ids[0]
+}
+
+resource "juju_machine" "k8s_machine" {
+  count = var.worker_count+1
+  model = juju_model.k8s_calico.name
+}
+
+locals {
+    k8s_juju_ids = [for machine in juju_machine.k8s_machine: split(":", machine.id)[1]]
+}
+
+resource "juju_integration" "etcd-easyrsa" {
+  model = juju_model.k8s_calico.name
+
+  application {
+    name = juju_application.etcd.name
+    endpoint = "certificates"
+  }
+
+  application {
+    name = juju_application.easyrsa.name
+    endpoint = "client"
+  }
+}
+
+resource "juju_integration" "kubernetes-control-plane-worker" {
+  model = juju_model.k8s_calico.name
+
+  application {
+    name = juju_application.kubernetes_control_plane.name
+    endpoint = "kube-control"
+  }
+
+  application {
+    name = juju_application.kubernetes_worker.name
+    endpoint = "kube-control"
+  }
 }
