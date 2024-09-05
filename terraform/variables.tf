@@ -25,7 +25,7 @@ variable "master_flavor" {
 
 variable "master_count" {
   type = number
-  default = 1
+  default = 0
 }
 
 variable "network_calico" {
@@ -50,7 +50,7 @@ variable "network_calico_end_ip" {
 
 variable "worker_count" {
   type = number
-  default = 1
+  default = 0
 }
 
 variable "worker_flavor" {

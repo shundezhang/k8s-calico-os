@@ -201,6 +201,7 @@ resource "juju_application" "easyrsa" {
   charm {
     name    = "easyrsa"
     channel = "1.28/stable"
+    base = "ubuntu@20.04"
   }
 
   placement = local.k8s_juju_ids[0]
@@ -213,6 +214,7 @@ resource "juju_application" "etcd" {
   charm {
     name    = "etcd"
     channel = "1.28/stable"
+    base = "ubuntu@20.04"
   }
 
   config = {
@@ -222,12 +224,13 @@ resource "juju_application" "etcd" {
 }
 
 resource "juju_application" "kubernetes_worker" {
-  name  = "kubernetes_worker"
+  name  = "kubernetes-worker"
   model = juju_model.k8s_calico.name
 
   charm {
     name    = "kubernetes-worker"
     channel = "1.28/stable"
+    base = "ubuntu@20.04"
   }
 
   config = {
@@ -242,12 +245,13 @@ resource "juju_application" "kubernetes_worker" {
 }
 
 resource "juju_application" "kubernetes_control_plane" {
-  name  = "kubernetes_control_plane"
+  name  = "kubernetes-control-plane"
   model = juju_model.k8s_calico.name
 
   charm {
     name    = "kubernetes-control-plane"
     channel = "1.28/stable"
+    base = "ubuntu@20.04"
   }
 
   config = {
@@ -296,7 +300,7 @@ resource "juju_application" "kubernetes_control_plane" {
 resource "juju_machine" "k8s_machine" {
   count = var.worker_count+1
   model = juju_model.k8s_calico.name
-  base        = "ubuntu@20.04"
+  base  = "ubuntu@20.04"
 }
 
 locals {
