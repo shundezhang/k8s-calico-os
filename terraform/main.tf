@@ -174,3 +174,58 @@ resource "juju_application" "calico" {
     node-to-node-mesh = true
   }
 }
+
+resource "juju_application" "containerd" {
+  name  = "containerd"
+  model = juju_model.k8s_calico.name
+
+  charm {
+    name    = "containerd"
+    channel = "1.28/stable"
+  }
+
+}
+
+resource "juju_application" "easyrsa" {
+  name  = "easyrsa"
+  model = juju_model.k8s_calico.name
+
+  charm {
+    name    = "easyrsa"
+    channel = "1.28/stable"
+  }
+
+  placement = "0"
+}
+
+resource "juju_application" "etcd" {
+  name  = "etcd"
+  model = juju_model.k8s_calico.name
+
+  charm {
+    name    = "etcd"
+    channel = "1.28/stable"
+  }
+
+  config = {
+    channel = "3.4/stable"
+  }
+  placement = "0"
+}
+
+resource "juju_application" "kubernetes_worker" {
+  name  = "kubernetes_worker"
+  model = juju_model.k8s_calico.name
+
+  charm {
+    name    = "kubernetes-worker"
+    channel = "1.28/stable"
+  }
+
+  config = {
+    kubelet-extra-config = "{}"
+  }
+
+  placement = "1,2"
+  expose = true
+}
