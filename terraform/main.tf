@@ -151,7 +151,7 @@ resource "juju_model" "k8s_calico" {
   cloud {
     name = var.juju_cloud_name
   }
-  config {
+  config = {
     network = "${var.network_main},${var.network_calico}"
   }
 }
