@@ -87,24 +87,24 @@ applications:
 relations:
 - - etcd:certificates
   - easyrsa:client
-- - kubernetes-master:kube-control
+- - kubernetes-control-plane:kube-control
   - kubernetes-worker:kube-control
-- - kubernetes-master:etcd
+- - kubernetes-control-plane:etcd
   - etcd:db
 - - containerd:containerd
-  - kubernetes-master:container-runtime
+  - kubernetes-control-plane:container-runtime
 - - containerd:containerd
   - kubernetes-worker:container-runtime
-- - kubernetes-master:certificates
+- - kubernetes-control-plane:certificates
   - easyrsa:client
 - - kubernetes-worker:certificates
   - easyrsa:client
 - - calico:etcd
   - etcd:db
 - - calico:cni
-  - kubernetes-master:cni
+  - kubernetes-control-plane:cni
 - - calico:cni
   - kubernetes-worker:cni
-- - kubernetes-master:kube-api-endpoint
+- - kubernetes-control-plane:kube-api-endpoint
   - kubernetes-worker:kube-api-endpoint
 
