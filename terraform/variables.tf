@@ -1,6 +1,6 @@
 variable "image" {
   type        = string
-  default = "auto-sync/ubuntu-bionic-18.04-amd64-server-20200807-disk1.img"
+  default = "auto-sync/ubuntu-focal-20.04-amd64-server-20240821-disk1.img"
 }
 
 variable "key_name" {
@@ -10,7 +10,7 @@ variable "key_name" {
 
 variable "network_main" {
   type = string
-  default = "shunde-zhang_admin_net"
+  default = "net_stg-reproducer-shunde-zhang-psd"
 }
 
 variable "calico_sec_groups" {
@@ -20,7 +20,7 @@ variable "calico_sec_groups" {
 
 variable "master_flavor" {
   type        = string
-  default = "m1.medium"
+  default = "staging-cpu1-ram2-disk20"
 }
 
 variable "master_count" {
@@ -50,15 +50,15 @@ variable "network_calico_end_ip" {
 
 variable "worker_count" {
   type = number
-  default = 3
+  default = 1
 }
 
 variable "worker_flavor" {
   type        = string
-  default = "m1.small"
+  default = "staging-cpu1-ram2-disk20"
 }
 
 variable "jump_host_flavor" {
   type        = string
-  default = "m1.small"
+  default = "staging-cpu1-ram2-disk20"
 }

@@ -1,9 +1,10 @@
 ---
 
 - name: install bird package
-  package:
+  apt:
     name: bird
     state: present
+    update_cache: true
 
 - name: bird config file
   template:
