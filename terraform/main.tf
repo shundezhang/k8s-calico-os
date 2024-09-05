@@ -296,6 +296,7 @@ resource "juju_application" "kubernetes_control_plane" {
 resource "juju_machine" "k8s_machine" {
   count = var.worker_count+1
   model = juju_model.k8s_calico.name
+  base        = "ubuntu@20.04"
 }
 
 locals {
