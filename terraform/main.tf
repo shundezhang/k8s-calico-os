@@ -239,9 +239,6 @@ resource "juju_application" "kubernetes_worker" {
 
   placement = join(",", slice(local.k8s_juju_ids, 1, length(local.k8s_juju_ids)))
 
-  lifecycle {
-        ignore_changes = [ placement, ]
-  }
 }
 
 resource "juju_application" "kubernetes_control_plane" {
