@@ -331,3 +331,129 @@ resource "juju_integration" "kubernetes-control-plane-worker" {
     endpoint = "kube-control"
   }
 }
+
+resource "juju_integration" "kubernetes-control-plane-etcd" {
+  model = juju_model.k8s_calico.name
+
+  application {
+    name = juju_application.kubernetes_control_plane.name
+    endpoint = "etcd"
+  }
+
+  application {
+    name = juju_application.etcd.name
+    endpoint = "db"
+  }
+}
+
+resource "juju_integration" "kubernetes-control-plane-containerd" {
+  model = juju_model.k8s_calico.name
+
+  application {
+    name = juju_application.kubernetes_control_plane.name
+    endpoint = "container-runtime"
+  }
+
+  application {
+    name = juju_application.containerd.name
+    endpoint = "containerd"
+  }
+}
+
+resource "juju_integration" "kubernetes-worker-containerd" {
+  model = juju_model.k8s_calico.name
+
+  application {
+    name = juju_application.kubernetes_worker.name
+    endpoint = "container-runtime"
+  }
+
+  application {
+    name = juju_application.containerd.name
+    endpoint = "containerd"
+  }
+}
+
+resource "juju_integration" "kubernetes-control-plane-easyrsa" {
+  model = juju_model.k8s_calico.name
+
+  application {
+    name = juju_application.kubernetes_control_plane.name
+    endpoint = "certificates"
+  }
+
+  application {
+    name = juju_application.easyrsa.name
+    endpoint = "client"
+  }
+}
+
+resource "juju_integration" "kubernetes-worker-easyrsa" {
+  model = juju_model.k8s_calico.name
+
+  application {
+    name = juju_application.easyrsa.name
+    endpoint = "client"
+  }
+
+  application {
+    name = juju_application.kubernetes_worker.name
+    endpoint = "certificates"
+  }
+}
+
+resource "juju_integration" "calico-etcd" {
+  model = juju_model.k8s_calico.name
+
+  application {
+    name = juju_application.calico.name
+    endpoint = "etcd"
+  }
+
+  application {
+    name = juju_application.etcd.name
+    endpoint = "db"
+  }
+}
+
+resource "juju_integration" "kubernetes-control-plane-calico" {
+  model = juju_model.k8s_calico.name
+
+  application {
+    name = juju_application.kubernetes_control_plane.name
+    endpoint = "cni"
+  }
+
+  application {
+    name = juju_application.calico.name
+    endpoint = "cni"
+  }
+}
+
+resource "juju_integration" "kubernetes-worker-calico" {
+  model = juju_model.k8s_calico.name
+
+  application {
+    name = juju_application.calico.name
+    endpoint = "cni"
+  }
+
+  application {
+    name = juju_application.kubernetes_worker.name
+    endpoint = "cni"
+  }
+}
+
+resource "juju_integration" "kubernetes-control-plane-worker-kube-api-endpoint" {
+  model = juju_model.k8s_calico.name
+
+  application {
+    name = juju_application.kubernetes_control_plane.name
+    endpoint = "kube-api-endpoint"
+  }
+
+  application {
+    name = juju_application.kubernetes_worker.name
+    endpoint = "kube-api-endpoint"
+  }
+}
