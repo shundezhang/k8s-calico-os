@@ -174,9 +174,9 @@ resource "juju_application" "calico" {
     node-to-node-mesh = true
   }
   units = 0
-  lifecycle {
-      ignore_changes = [ placement, ]
-  }
+  # lifecycle {
+  #     ignore_changes = [ placement, ]
+  # }
 }
 
 resource "juju_application" "containerd" {
@@ -188,9 +188,9 @@ resource "juju_application" "containerd" {
     channel = "1.28/stable"
   }
   units = 0
-  lifecycle {
-      ignore_changes = [ placement, ]
-  }
+  # lifecycle {
+  #     ignore_changes = [ placement, ]
+  # }
 
 }
 
@@ -204,7 +204,8 @@ resource "juju_application" "easyrsa" {
     base = "ubuntu@20.04"
   }
 
-  placement = local.k8s_juju_ids[0]
+  # placement = local.k8s_juju_ids[0]
+  placement = juju_machine.k8s_machine.id
 }
 
 resource "juju_application" "etcd" {
@@ -220,7 +221,8 @@ resource "juju_application" "etcd" {
   config = {
     channel = "3.4/stable"
   }
-  placement = local.k8s_juju_ids[0]
+  # placement = local.k8s_juju_ids[0]
+  placement = juju_machine.k8s_machine.id
 }
 
 resource "juju_application" "kubernetes_worker" {
@@ -236,8 +238,8 @@ resource "juju_application" "kubernetes_worker" {
   config = {
     kubelet-extra-config = "{}"
   }
-
-  placement = join(",", slice(local.k8s_juju_ids, 1, length(local.k8s_juju_ids)))
+  units = var.worker_count
+  # placement = join(",", slice(local.k8s_juju_ids, 1, length(local.k8s_juju_ids)))
 
 }
 
@@ -290,19 +292,20 @@ resource "juju_application" "kubernetes_control_plane" {
           - RequestReceived
     EOT
   }
-
-  placement = local.k8s_juju_ids[0]
+  units = 1
+  # placement = local.k8s_juju_ids[0]
+  placement = juju_machine.k8s_machine.id
 }
 
 resource "juju_machine" "k8s_machine" {
-  count = var.worker_count+1
+  # count = var.worker_count+1
   model = juju_model.k8s_calico.name
   base  = "ubuntu@20.04"
 }
 
-locals {
-    k8s_juju_ids = [for machine in juju_machine.k8s_machine: split(":", machine.id)[1]]
-}
+# locals {
+#     k8s_juju_ids = [for machine in juju_machine.k8s_machine: split(":", machine.id)[1]]
+# }
 
 resource "juju_integration" "etcd-easyrsa" {
   model = juju_model.k8s_calico.name
